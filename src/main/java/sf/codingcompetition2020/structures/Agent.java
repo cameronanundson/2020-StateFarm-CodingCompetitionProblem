@@ -17,6 +17,10 @@ public class Agent {
 		this.lastName = lastName;
 	}
 	
+	public Agent() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getAgentId() {
 		return agentId;
 	}

@@ -1,6 +1,8 @@
 package sf.codingcompetition2020;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +24,13 @@ import sf.codingcompetition2020.structures.Customer;
 import sf.codingcompetition2020.structures.Vendor;
 
 public class CodingCompCsvUtil {
+	CsvMapper csvMapper = new CsvMapper();
+	CsvSchema schema = CsvSchema.emptySchema().withHeader();
 	
+	public CodingCompCsvUtil() {
+		super();
+	}
+
 	/* #1 
 	 * readCsvFile() -- Read in a CSV File and return a list of entries in that file.
 	 * @param filePath -- Path to file being read in.
@@ -30,7 +38,25 @@ public class CodingCompCsvUtil {
 	 * @return -- List of entries being returned.
 	 */
 	public <T> List<T> readCsvFile(String filePath, Class<T> classType) {
+		ObjectReader objReader = csvMapper.reader(classType).with(schema);
 		
+		List<T> list = new ArrayList<>();
+		
+		try (Reader reader = new FileReader(filePath)) {
+			MappingIterator<T> mi = objReader.readValues(reader);
+			
+		    while (mi.hasNext()) {
+		    	list.add(mi.next());
+		    }
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return list;
 	}
 
 	
