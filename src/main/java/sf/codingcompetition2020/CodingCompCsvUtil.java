@@ -4,7 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.Integer;
+import java.lang.Float;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +71,16 @@ public class CodingCompCsvUtil {
 	 * @return -- The number of agents in a given area
 	 */
 	public int getAgentCountInArea(String filePath,String area) {
-
+		List<Agent> agentList = readCsvFile(filePath, Agent.class);
+		
+		int count = 0;
+		for (Agent agent: agentList) {
+			if (agent.getArea().equals(area)) {
+				count ++;
+			}
+		}
+		
+		return count;
 	}
 
 	
@@ -79,7 +92,16 @@ public class CodingCompCsvUtil {
 	 * @return -- The number of agents in a given area
 	 */
 	public List<Agent> getAgentsInAreaThatSpeakLanguage(String filePath, String area, String language) {
-
+		List<Agent> agentList = readCsvFile(filePath, Agent.class);
+		List<Agent> agentsInAreaThatSpeakLanguage = new ArrayList<>();
+		
+		for (Agent agent: agentList) {
+			if (agent.getArea().equals(area) && agent.getLanguage().equals(language)) {
+				agentsInAreaThatSpeakLanguage.add(agent);
+			}
+		}
+		
+		return agentsInAreaThatSpeakLanguage;
 	}
 	
 	
@@ -114,7 +136,16 @@ public class CodingCompCsvUtil {
 	 * @return -- List of customers who’ve made an inquiry for a policy but have not signed up.
 	 */
 	public List<Customer> getLeadsForInsurance(String filePath) {
-
+		List<Customer> customerList = readCsvFile(filePath, Customer.class);
+		List<Customer> leadList = new ArrayList<>();
+		
+		for (Customer customer: customerList) {
+			if (!customer.isAutoPolicy() && !customer.isHomePolicy() && !customer.isRentersPolicy()) {
+				leadList.add(customer);
+			}
+		}
+		
+		return leadList;
 	}
 
 
@@ -129,7 +160,22 @@ public class CodingCompCsvUtil {
 	 * @return -- List of vendors within a given area, filtered by scope and vendor rating.
 	 */
 	public List<Vendor> getVendorsWithGivenRatingThatAreInScope(String filePath, String area, boolean inScope, int vendorRating) {
-
+		List<Vendor> vendorList = readCsvFile(filePath, Vendor.class);
+		List<Vendor> vendorsWithGivenRatingInScope = new ArrayList<>();
+		
+		for (Vendor vendor: vendorList) {
+			if (vendor.getArea().equals(area) && vendor.getVendorRating() == vendorRating) {
+				if (inScope) {
+					if (vendor.isInScope()) {
+						vendorsWithGivenRatingInScope.add(vendor);
+					}
+				} else {
+					vendorsWithGivenRatingInScope.add(vendor);
+				}
+			}
+		}
+		
+		return vendorsWithGivenRatingInScope;
 	}
 
 
@@ -143,7 +189,19 @@ public class CodingCompCsvUtil {
 	 * @return -- List of customers filtered by age, number of vehicles insured and the number of dependents.
 	 */
 	public List<Customer> getUndisclosedDrivers(String filePath, int vehiclesInsured, int dependents) {
-
+		List<Customer> customerList = readCsvFile(filePath, Customer.class);
+		List<Customer> undisclosedDrivers = new ArrayList<>();
+		
+		for (Customer customer: customerList) {
+			if (customer.getAge() >= 40 
+					&& customer.getAge() <= 50 
+					&& customer.getVehiclesInsured() > vehiclesInsured
+					&& customer.getDependents().size() <= dependents) {
+				undisclosedDrivers.add(customer);
+			}
+		}
+		
+		return undisclosedDrivers;	
 	}	
 
 
@@ -156,7 +214,39 @@ public class CodingCompCsvUtil {
 	 * @return -- Agent ID of agent with the given rank.
 	 */
 	public int getAgentIdGivenRank(String filePath, int agentRank) {
+		List<Customer> customerList = readCsvFile(filePath, Customer.class);
+		
+		// Make Map that maps agent id to rating
+		// Sort the map
+		// Get the 'agentRank' part of map
+		
+		Map<Integer, Float> sumOfAgentRatings = new HashMap<>();
+		Map<Integer, Integer> countOfAgentRatings = new HashMap<>();
+		
+		for (Customer customer: customerList) {
+			Integer agentId = customer.getAgentId();
+			Float agentRating = (float) customer.getAgentRating();
+			Float currentSumOfAgentRatings = sumOfAgentRatings.get(agentId) != null ? sumOfAgentRatings.get(agentId) : 0;
+			Integer currentCountOfAgentRatings = countOfAgentRatings.get(agentId) != null ? countOfAgentRatings.get(agentId) : 0;
 			
+			Float newSumOfAgentRatings = currentSumOfAgentRatings + agentRating;
+			Integer newCountOfAgentRatings = currentCountOfAgentRatings + 1;
+			
+			sumOfAgentRatings.put(agentId, newSumOfAgentRatings);
+			countOfAgentRatings.put(agentId, newCountOfAgentRatings);
+		}
+		
+		Map<Integer, Float> averageAgentRating = new HashMap<>();
+		for (Integer agentId: sumOfAgentRatings.keySet()) {
+			averageAgentRating.put(agentId, sumOfAgentRatings.get(agentId) / countOfAgentRatings.get(agentId));
+		}
+		
+		List<Integer> sortedAgentIdsByRating = averageAgentRating.entrySet().stream()
+				.sorted(Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()))
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toList());
+		
+		return sortedAgentIdsByRating.get(agentRank);
 	}	
 
 	

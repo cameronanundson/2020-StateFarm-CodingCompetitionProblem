@@ -23,6 +23,29 @@ public class Customer {
 	private String totalMonthlyPremium;
 	private short yearsOfService;
 	private Integer vehiclesInsured;
+	
+	public Customer(int customerId, String firstName, String lastName, int age, String area, int agentId,
+			short agentRating, String primaryLanguage, List<Dependent> dependents, boolean homePolicy,
+			boolean autoPolicy, boolean rentersPolicy, String totalMonthlyPremium, short yearsOfService,
+			Integer vehiclesInsured) {
+		super();
+		this.customerId = customerId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.age = age;
+		this.area = area;
+		this.agentId = agentId;
+		this.agentRating = agentRating;
+		this.primaryLanguage = primaryLanguage;
+		this.dependents = dependents;
+		this.homePolicy = homePolicy;
+		this.autoPolicy = autoPolicy;
+		this.rentersPolicy = rentersPolicy;
+		this.totalMonthlyPremium = totalMonthlyPremium;
+		this.yearsOfService = yearsOfService;
+		this.vehiclesInsured = vehiclesInsured;
+	}
+	
 	public int getCustomerId() {
 		return customerId;
 	}
