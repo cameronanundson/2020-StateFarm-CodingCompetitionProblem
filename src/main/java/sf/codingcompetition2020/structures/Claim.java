@@ -15,6 +15,10 @@ public class Claim {
 		this.monthsOpen = monthsOpen;
 	}
 	
+	public Claim() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public int getClaimId() {
 		return claimId;
 	}

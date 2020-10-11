@@ -46,6 +46,10 @@ public class Customer {
 		this.vehiclesInsured = vehiclesInsured;
 	}
 	
+	public Customer() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public int getCustomerId() {
 		return customerId;
 	}

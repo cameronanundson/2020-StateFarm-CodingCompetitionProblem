@@ -14,6 +14,10 @@ public class Vendor {
 		this.inScope = inScope;
 	}
 	
+	public Vendor() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public int getVendorId() {
 		return vendorId;
 	}

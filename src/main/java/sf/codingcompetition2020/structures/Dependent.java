@@ -10,6 +10,10 @@ public class Dependent {
 		this.lastName = lastName;
 	}
 	
+	public Dependent() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public String getFirstName() {
 		return firstName;
 	}
