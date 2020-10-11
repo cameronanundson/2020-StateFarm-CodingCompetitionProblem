@@ -16,8 +16,17 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import javax.xml.validation.Schema;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
@@ -62,7 +71,6 @@ public class CodingCompCsvUtil {
 		
 		return list;
 	}
-
 	
 	/* #2
 	 * getAgentCountInArea() -- Return the number of agents in a given area.
@@ -193,7 +201,7 @@ public class CodingCompCsvUtil {
 		List<Vendor> vendorsWithGivenRatingInScope = new ArrayList<>();
 		
 		for (Vendor vendor: vendorList) {
-			if (vendor.getArea().equals(area) && vendor.getVendorRating() == vendorRating) {
+			if (vendor.getArea().equals(area) && vendor.getVendorRating() >= vendorRating) {
 				if (inScope) {
 					if (vendor.isInScope()) {
 						vendorsWithGivenRatingInScope.add(vendor);
