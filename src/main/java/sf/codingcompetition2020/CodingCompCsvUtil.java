@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +93,27 @@ public class CodingCompCsvUtil {
 	 * @return -- The number of customers that use a certain agent in a given area.
 	 */
 	public short countCustomersFromAreaThatUseAgent(Map<String,String> csvFilePaths, String customerArea, String agentFirstName, String agentLastName) {
+		short countCustomers = 0;
+		int agentId = -1;
+		List<Agent> agentList = readCsvFile(csvFilePaths.get("agentList"), Agent.class);
+		
+		for (Agent a : agentList) {
+			if (a.getFirstName().equals(agentFirstName) && a.getLastName().equals(agentLastName)) {
+				agentId = a.getAgentId();
+				break;
+			}
+		}
+		
+		List<Customer> customerList = readCsvFile(csvFilePaths.get("customerList"), Customer.class);
+		for (Customer c : customerList) {
+			if (c.getArea().equals(customerArea) && c.getAgentId() == agentId) {
+				countCustomers++;
+			}
+		}
+		return countCustomers;
+	}
+	
+	public int getAgentID(String filePath, String agentFirstName, String agentLastName) {
 		
 	}
 
@@ -103,7 +125,20 @@ public class CodingCompCsvUtil {
 	 * @return -- List of customers retained for a given number of years, in ascending order of policy cost.
 	 */
 	public List<Customer> getCustomersRetainedForYearsByPlcyCostAsc(String customerFilePath, short yearsOfService) {
-
+		List<Customer> customerList = readCsvFile(customerFilePath, Customer.class);
+		List<Customer> yearsList = new ArrayList();
+		
+		for (Customer c : customerList) {
+			if (c.getYearsOfService() == yearsOfService) {
+				yearsList.add(c);
+			}
+		}
+		Collections.sort(yearsList, (Customer c1, Customer c2) ->{
+			return c1.getTotalMonthlyPremium().compareToIgnoreCase(c2.getTotalMonthlyPremium());
+		});
+		
+		return yearsList;
+		
 	}
 
 	
@@ -114,7 +149,7 @@ public class CodingCompCsvUtil {
 	 * @return -- List of customers who’ve made an inquiry for a policy but have not signed up.
 	 */
 	public List<Customer> getLeadsForInsurance(String filePath) {
-
+		
 	}
 
 
@@ -167,7 +202,24 @@ public class CodingCompCsvUtil {
 	 * @return -- List of customers who’ve filed a claim within the last <numberOfMonths>.
 	 */
 	public List<Customer> getCustomersWithClaims(Map<String,String> csvFilePaths, short monthsOpen) {
-
+		Map<Integer, Boolean> ids = new HashMap<>();
+		
+		List<Customer> customerList = readCsvFile(csvFilePaths.get("customerList"), Customer.class);
+		List<Claim> claimList = readCsvFile(csvFilePaths.get("claimList"), Claim.class);
+		List<Customer> customersWithClaim = new ArrayList();
+		
+		for (Claim claim: claimList) {
+			if (claim.getMonthsOpen() <= monthsOpen) {
+				if (ids.get(claim.getCustomerId()) == null) {
+					ids.put(claim.getCustomerId(), true);
+					Customer c = customerList.get(claim.getCustomerId() - 1);
+					customersWithClaim.add(c);
+				}
+				
+			}
+		}
+		
+		return customersWithClaim;
 	}	
 
 }
